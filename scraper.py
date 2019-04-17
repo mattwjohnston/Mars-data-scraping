@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from splinter import Browser
 import pandas as pd
+import datetime as dt
 
 def start_scraper():
     #I put all the methods before the visualization to avoid passing around any variables
@@ -16,20 +17,26 @@ def start_scraper():
         slider = news_bucket.select_one('ul.item_list li.slide')
         #found these tags by sifting through thee html
         slider.find("div", class_='content_title')
+        list_date = slider.find("div", class_='list_date').get_text()
         title = slider.find("div", class_='content_title').get_text()
+        '''titlelink=slider.find("div", class_='content_title')[0].find_children("a", recursive=False)
+        #link = titlelink.descendents.
+        print(titlelink)
+        link2 = link.get_link()
+        print(link2)
+        link = link.descendents.find_all('href')'''
         article = slider.find('div', class_="article_teaser_body").get_text()
-        print(article)
-        return [title, article]
+        return [title, article, list_date]
 
     def image():
         # featured picture
         url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
         browser.visit(url)
         image = browser.find_by_id('full_image')
-        image.click()
+        image.first.click()
         browser.is_element_present_by_text('more info', wait_time=1)
         more_info = browser.find_link_by_partial_text('more info')
-        more_info.click()
+        more_info.first.click()
         html = browser.html
         image_bucket = BeautifulSoup(html, 'html.parser')
         image_location = image_bucket.select_one('figure.lede a img').get("src")
@@ -81,9 +88,12 @@ def start_scraper():
     data = {
         'news_title': news()[0],
         'news_article': news()[1],
+        'news_link': news()[2],
+        'news_post_date': news()[3],
         'image':image(),
         'weather':twitter_weather(),
         'facts':facts(),
-        'hemispheres':hemispheres()
+        'hemispheres':hemispheres(),
+        "last_modified": dt.datetime.now()
     }
     return data
