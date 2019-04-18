@@ -85,11 +85,11 @@ def start_scraper():
 
     path = {'executable_path': 'chromedriver'}
     browser = Browser('chrome', **path)
+    news_data = news()
     data = {
-        'news_title': news()[0],
-        'news_article': news()[1],
-        'news_link': news()[2],
-        'news_post_date': news()[3],
+        'news_title': news_data[0],
+        'news_article': news_data[1],
+        'news_post_date': news_data[2],
         'image':image(),
         'weather':twitter_weather(),
         'facts':facts(),
